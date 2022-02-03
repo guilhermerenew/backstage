@@ -73,12 +73,19 @@ export type PermissionCondition<TParams extends unknown[] = unknown[]> = {
 };
 
 /**
+ * Utility type to represent an array with 1 or more elements.
+ *
+ * @private
+ */
+export type NonEmptyArray<T> = [T, ...T[]];
+
+/**
  * Composes several {@link PermissionCondition}s as criteria with a nested AND/OR structure.
  * @public
  */
 export type PermissionCriteria<TQuery> =
-  | { allOf: PermissionCriteria<TQuery>[] }
-  | { anyOf: PermissionCriteria<TQuery>[] }
+  | { allOf: NonEmptyArray<PermissionCriteria<TQuery>> }
+  | { anyOf: NonEmptyArray<PermissionCriteria<TQuery>> }
   | { not: PermissionCriteria<TQuery> }
   | TQuery;
 
