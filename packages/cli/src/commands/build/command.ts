@@ -16,19 +16,26 @@
 
 import { Command } from 'commander';
 import { buildPackage, Output } from '../../lib/builder';
-import { PackageRole, findRoleFromCommand, getRoleInfo } from '../../lib/role';
-
-const bundledRoles: PackageRole[] = ['app', 'backend'];
+import { findRoleFromCommand, getRoleInfo } from '../../lib/role';
+import { buildApp } from './buildApp';
+import { buildBackend } from './buildBackend';
 
 export async function command(cmd: Command): Promise<void> {
   const role = await findRoleFromCommand(cmd);
-  const roleInfo = getRoleInfo(role);
 
-  if (bundledRoles.includes(role)) {
-    throw new Error(
-      `Build command is not supported for package role '${role}'`,
-    );
+  if (role === 'app') {
+    return buildApp({
+      configPaths: cmd.config as string[],
+      writeStats: Boolean(cmd.stats),
+    });
   }
+  if (role === 'backend') {
+    return buildBackend({
+      skipBuildDependencies: Boolean(cmd.skipBuildDependencies),
+    });
+  }
+
+  const roleInfo = getRoleInfo(role);
 
   const outputs = new Set<Output>();
 
